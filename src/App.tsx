@@ -1,25 +1,43 @@
-import type { Component } from 'solid-js';
+import { Component, createSignal, createUniqueId } from "solid-js";
 
-import logo from './logo.svg';
-import styles from './App.module.css';
+interface Todo {
+  id: string;
+  text: string;
+  isCompleted: boolean;
+}
 
 const App: Component = () => {
+  const [todos, setTodos] = createSignal<Todo[]>([]);
+
+  const handleSubmit = (e: Event) => {
+    e.preventDefault();
+
+    const input = e.target as HTMLFormElement;
+    const value = input[0].value; // TODO: Fix this
+
+    if (!value) return;
+
+    setTodos([
+      ...todos(),
+      { id: createUniqueId(), text: value, isCompleted: false },
+    ]);
+  };
+
   return (
-    <div class={styles.App}>
-      <header class={styles.header}>
-        <img src={logo} class={styles.logo} alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          class={styles.link}
-          href="https://github.com/solidjs/solid"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn Solid
-        </a>
-      </header>
+    <div class="p-2">
+      <form onSubmit={handleSubmit}>
+        <input
+          class="border rounded-lg px-3 py-2 mb-4"
+          placeholder="Enter a task"
+          type="text"
+        />
+      </form>
+      <div class="text-lg font-bold">Todos</div>
+      <ul class="list-disc">
+        {todos().map((todo) => (
+          <li>{todo.text}</li>
+        ))}
+      </ul>
     </div>
   );
 };
